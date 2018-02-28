@@ -2,50 +2,69 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyTerritory : MonoBehaviour {
+public class EnemyTerritory : MonoBehaviour
+{
 
-    public BoxCollider territory;
+    RaycastHit2D hit;
+    public LayerMask collisionLayer;
+    public Color raycolor;
     GameObject player;
-    bool playerInTerritory;
-
-    public GameObject enemy;
+    bool follow;
     EnemyController enemycontroller;
+    public Transform target;
+
+    Vector3 direction;
 
     // Use this for initialization
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         enemycontroller = transform.parent.gameObject.GetComponent<EnemyController>();
-        playerInTerritory = false;
+        enemycontroller.Wander();
     }
-
-    // Update is called once per frame
-    void Update()
+    void OnTriggerStay2D(Collider2D other)
     {
-        if (playerInTerritory == true)
+        if (other.CompareTag("Player"))
         {
-            enemycontroller.MoveToPlayer();
-        }
-
-        if (playerInTerritory == false)
-        {
-            enemycontroller.Rest();
+            enemycontroller.transform.LookAt(target.position);
+            enemycontroller.transform.Rotate(new Vector3(0, -90, 0), Space.Self);
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+       
+            // Update is called once per frame
+            void Update()
     {
-        if (other.gameObject == player)
+        Vector3 targetDir = target.position - transform.position;
+        Vector3 direction = enemycontroller.transform.localRotation * Vector3.right;
+        float angle = Vector3.Angle(targetDir, direction);
+        //Debug.Log(angle);
+        if (angle < 60f)
         {
-            playerInTerritory = true;
+            Vector3 rayDirection = target.transform.position - transform.position;
+            Debug.DrawRay(transform.position, rayDirection, raycolor);
+            hit = Physics2D.Raycast(transform.position, rayDirection, 8, collisionLayer);
+            if (hit.collider != null) { 
+            if (hit.collider.tag == "Player")
+            {
+
+                enemycontroller.MoveToPlayer();
+            }
+            else if (hit.collider.tag == "Rock")
+                {
+                    enemycontroller.Wander();
+                }
+                }
+        else if (hit.collider == null)
+        {
+
+            enemycontroller.Wander();
         }
+        }
+        else
+        {
+            enemycontroller.Wander();
+        }
+    }
     }
 
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject == player)
-        {
-            playerInTerritory = false;
-        }
-    }
-}

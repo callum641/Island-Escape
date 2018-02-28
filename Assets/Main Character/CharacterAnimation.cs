@@ -27,7 +27,8 @@ public class CharacterAnimation : MonoBehaviour {
 
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+        {
         if (Input.GetKey("a") && IsKeyEnabled_a == true)
             {
                 IsKeyEnabled_w = false;

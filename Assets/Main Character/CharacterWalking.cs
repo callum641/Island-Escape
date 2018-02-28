@@ -10,9 +10,10 @@ public class CharacterWalking : MonoBehaviour {
     void Start () {
       
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         Vector3 pos = transform.position;
 
         if (Input.GetKey("w"))

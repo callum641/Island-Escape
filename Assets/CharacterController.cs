@@ -7,7 +7,6 @@ public class CharacterController : MonoBehaviour
 {
     [SerializeField]
     private PolygonCollider2D[] colliders;
-    private int currentColliderIndex = 0;
     private bool isInvincible = false;
     private float timeSpentInvincible;
     private int health = 3;
@@ -21,14 +20,15 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(health);
+        Debug.Log("invincible " + isInvincible);
+        Debug.Log("Health =" + health);
         if (isInvincible)
         {
 
             timeSpentInvincible += Time.deltaTime;
 
 
-            if (timeSpentInvincible < 3f)
+            if (timeSpentInvincible < 2f)
             {
                 float remainder = timeSpentInvincible % .3f;
                 GetComponent<Renderer>().enabled = remainder > .15f;
