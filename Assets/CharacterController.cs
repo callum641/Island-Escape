@@ -9,19 +9,24 @@ public class CharacterController : MonoBehaviour
     private PolygonCollider2D[] colliders;
     private bool isInvincible = false;
     private float timeSpentInvincible;
-    private int health = 3;
     public PolygonCollider2D enemyContact;
+    private HealthBarController healthBar;
+  
+
     // Use this for initialization
     void Start()
     {
-
+        healthBar = GameObject.Find("Health Bar").GetComponent<HealthBarController>();
     }
+
+    
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("invincible " + isInvincible);
-        Debug.Log("Health =" + health);
+        //Debug.Log("invincible " + isInvincible);
+
+       
         if (isInvincible)
         {
 
@@ -42,6 +47,8 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+   
+
     void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("Left Wall"))
@@ -56,7 +63,8 @@ public class CharacterController : MonoBehaviour
             {
                 isInvincible = true;
                 timeSpentInvincible = 0;
-                if (--health <= 0)
+            healthBar.changeHealth(-1);
+                if (healthBar.currentHealth <= 0)
                 {
                     SceneManager.LoadScene("Main Scene");
                 }

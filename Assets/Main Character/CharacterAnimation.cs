@@ -6,6 +6,8 @@ public class CharacterAnimation : MonoBehaviour {
     public Sprite[] sprites;
     public float framesPerSecond;
     private SpriteRenderer spriteRenderer;
+    private SwordAttack attack;
+
     public bool IsKeyEnabled_w { get; set; }
     public bool IsKeyEnabled_a { get; set; }
     public bool IsKeyEnabled_s { get; set; }
@@ -15,6 +17,7 @@ public class CharacterAnimation : MonoBehaviour {
     void Start () {
         spriteRenderer = GetComponent<Renderer>() as SpriteRenderer;
         Awake();
+        attack = gameObject.GetComponentInChildren<SwordAttack>();
     }
 
     void Awake()
@@ -37,6 +40,9 @@ public class CharacterAnimation : MonoBehaviour {
                 int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
                 index = index % 6 + 1;
                 spriteRenderer.sprite = sprites[index];
+            //attack.LeftAnimation();
+            //attack.AttackLeft();
+
         }
         else if (Input.GetKey("d") && IsKeyEnabled_d == true)
         {
@@ -46,6 +52,10 @@ public class CharacterAnimation : MonoBehaviour {
             int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
             index = index % 6 + 7;
             spriteRenderer.sprite = sprites[index];
+            if (Input.GetMouseButtonDown(0))
+            {
+                //attack.AttackRight();
+            }
         }
         else if (Input.GetKey("s") && IsKeyEnabled_s == true)
         {
@@ -55,6 +65,10 @@ public class CharacterAnimation : MonoBehaviour {
             int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
             index = index % 5 + 13;
             spriteRenderer.sprite = sprites[index];
+            if (Input.GetMouseButtonDown(0))
+            {
+               // attack.AttackDown();
+            }
         }
         else if (Input.GetKey("w") && IsKeyEnabled_w == true)
         {
@@ -64,6 +78,10 @@ public class CharacterAnimation : MonoBehaviour {
             int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
             index = index % 3 + 18;
             spriteRenderer.sprite = sprites[index];
+            if (Input.GetMouseButtonDown(0))
+            {
+                //attack.AttackUp();
+            }
         }
         else
         {
