@@ -11,12 +11,17 @@ public class CharacterController : MonoBehaviour
     private float timeSpentInvincible;
     public PolygonCollider2D enemyContact;
     private HealthBarController healthBar;
-  
+    float distance;
+    public Transform target;
+    public int amount;
+    private EnemyController enemyController;
+
 
     // Use this for initialization
     void Start()
     {
         healthBar = GameObject.Find("Health Bar").GetComponent<HealthBarController>();
+        enemyController = GameObject.Find("Enemy").GetComponent<EnemyController>();
     }
 
     
@@ -25,8 +30,10 @@ public class CharacterController : MonoBehaviour
     void Update()
     {
         //Debug.Log("invincible " + isInvincible);
-
-       
+        if (Input.GetMouseButtonDown(0))
+        {
+            SwordAttack();
+        }
         if (isInvincible)
         {
 
@@ -45,6 +52,18 @@ public class CharacterController : MonoBehaviour
                 isInvincible = false;
             }
         }
+    }
+
+    void SwordAttack()
+    {
+        Vector3 targetDir = target.position - transform.position;
+        Vector3 direction = transform.localRotation * Vector3.right;
+        distance = Vector3.Distance(target.position, transform.position);
+        if (distance < 4f)
+            {
+            enemyController.TakeDamage(-1);
+            }
+
     }
 
    
@@ -66,7 +85,7 @@ public class CharacterController : MonoBehaviour
             healthBar.changeHealth(-1);
                 if (healthBar.currentHealth <= 0)
                 {
-                    SceneManager.LoadScene("Main Scene");
+                    SceneManager.LoadScene("Main Menu");
                 }
             }
         }

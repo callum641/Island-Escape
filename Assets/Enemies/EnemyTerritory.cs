@@ -14,6 +14,9 @@ public class EnemyTerritory : MonoBehaviour
     public Transform target;
     float time = 0f;
     float timepassed;
+    float time2 = 0f;
+    float random;
+    float switchState;
 
     Vector3 direction;
 
@@ -22,13 +25,26 @@ public class EnemyTerritory : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         enemycontroller = transform.parent.gameObject.GetComponent<EnemyController>();
-        enemycontroller.Wander();
+        switchState = Random.Range(6, 10);
+        random = Random.Range(11, 14);
     }
-   
 
-       
-            // Update is called once per frame
-            void Update()
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("Left Wall"))
+        {
+            transform.Translate(0.5f, 0, 0);
+        }
+        else if (other.CompareTag("Bottom Wall"))
+        {
+            transform.Translate(0, 0.5f, 0);
+        }
+    }
+
+
+
+        // Update is called once per frame
+        void Update()
     {
         Vector3 targetDir = target.position - transform.position;
         Vector3 direction = enemycontroller.transform.localRotation * Vector3.right;
@@ -58,13 +74,49 @@ public class EnemyTerritory : MonoBehaviour
                 }
         else if (hit.collider == null)
         {
+              
+                time2 += Time.deltaTime;
+                if (time2 < switchState)
+                {
+                   
+                    enemycontroller.Wander();
+                }
+                else if (time2 > switchState && time2 < random)
+                {
+                    
+                    enemycontroller.Stay();
+                }
+                else
+                {
+                    time2 = 0;
+                    switchState = Random.Range(6, 10);
+                    random = Random.Range(12, 16);
+                }
 
-            enemycontroller.Wander();
-        }
+            }
         }
         else
         {
-            enemycontroller.Wander();
+         
+            time2 += Time.deltaTime;
+            if (time2 < switchState)
+            {
+               
+                enemycontroller.Wander();
+            }
+            else if (time2 > switchState && time2 < random)
+            {
+               
+               
+                enemycontroller.Stay();
+            }
+            else
+            {
+                time2 = 0;
+                switchState = Random.Range(6, 10);
+                random = Random.Range(11, 14);
+            }
+
         }
     }
     }
