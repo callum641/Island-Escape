@@ -6,22 +6,26 @@ using UnityEngine.SceneManagement;
 public class CharacterController : MonoBehaviour
 {
     [SerializeField]
-    private PolygonCollider2D[] colliders;
+    private BoxCollider2D[] colliders;
     private bool isInvincible = false;
     private float timeSpentInvincible;
-    public PolygonCollider2D enemyContact;
+    public BoxCollider2D enemyContact;
     private HealthBarController healthBar;
     float distance;
-    public Transform target;
+    Transform target;
     public int amount;
     private EnemyController enemyController;
+    private UIManager uiManager;
+    public List<Transform> spawners;
+    private GameObject rotation;
+    public int score;
 
 
     // Use this for initialization
     void Start()
     {
         healthBar = GameObject.Find("Health Bar").GetComponent<HealthBarController>();
-        enemyController = GameObject.Find("Enemy").GetComponent<EnemyController>();
+        rotation = GameObject.Find("Rotation");
     }
 
     
@@ -56,17 +60,60 @@ public class CharacterController : MonoBehaviour
 
     void SwordAttack()
     {
-        Vector3 targetDir = target.position - transform.position;
-        Vector3 direction = transform.localRotation * Vector3.right;
-        distance = Vector3.Distance(target.position, transform.position);
-        if (distance < 4f)
-            {
-            enemyController.TakeDamage(-1);
-            }
+        spawners.Clear();
 
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            spawners.Add(go.GetComponent<Transform>());
+        }
+        if (spawners.Count > 0) { 
+        target = GetClosestEnemy(spawners);
+        enemyController = target.gameObject.GetComponent<EnemyController>();
+        distance = Vector3.Distance(target.position, transform.position);
+        Vector3 targetDir = target.position - transform.position;
+        Vector3 direction = rotation.transform.localRotation * Vector3.right;
+        float angle = Vector3.Angle(targetDir, direction);
+            if (distance < 4f && angle <60f)
+        {
+            enemyController.TakeDamage(-1);
+        }
+    }
     }
 
-   
+   public void IncreaseScore(int amount)
+    {
+        score += amount;
+        uiManager = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
+        uiManager.SetScore(score);
+        if (healthBar.currentHealth < 3)
+        {
+            healthBar.changeHealth(1);
+        }
+        if (score >= 10)
+        {
+            SceneManager.LoadScene("Main Menu");
+        }
+    }
+
+    //Gotten from unity forum as a means to calculate distance between an array of enemies and Player
+    Transform GetClosestEnemy(List<Transform> enemies)
+    {
+        Transform tMin = null;
+        float minDist = Mathf.Infinity;
+        Vector3 currentPos = transform.position;
+        foreach (Transform t in enemies)
+        {
+            float dist = Vector3.Distance(t.position, currentPos);
+            if (dist < minDist)
+            {
+                tMin = t;
+                minDist = dist;
+            }
+        }
+        return tMin;
+    }
+
+
 
     void OnTriggerStay2D(Collider2D other)
     {
@@ -78,17 +125,17 @@ public class CharacterController : MonoBehaviour
         {
             transform.Translate(0, 0.5f, 0);
         }
-            if (!isInvincible && other.CompareTag("Enemy"))
-            {
-                isInvincible = true;
-                timeSpentInvincible = 0;
+        if (!isInvincible && other.CompareTag("Enemy"))
+        {
+            isInvincible = true;
+            timeSpentInvincible = 0;
             healthBar.changeHealth(-1);
-                if (healthBar.currentHealth <= 0)
-                {
-                    SceneManager.LoadScene("Main Menu");
-                }
+            if (healthBar.currentHealth <= 0)
+            {
+                SceneManager.LoadScene("Main Menu");
             }
         }
+    }
     }
 
 

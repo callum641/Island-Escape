@@ -14,27 +14,29 @@ public class CharacterWalking : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        Vector3 pos = transform.position;
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
 
         if (Input.GetKey("w"))
         {
-            pos.y += moveSpeed * Time.deltaTime;
+            rb.AddForce(transform.up * 7);
+            
         }
         if (Input.GetKey("s"))
         {
-            pos.y -= moveSpeed * Time.deltaTime;
+            rb.AddForce(-transform.up * 7);
+            
         }
         if (Input.GetKey("d"))
         {
-            pos.x += moveSpeed * Time.deltaTime;
+            rb.AddForce(transform.right * 7);
+            
         }
         if (Input.GetKey("a"))
         {
-            pos.x -= moveSpeed * Time.deltaTime;
+            rb.AddForce(-transform.right * 7);
+            
         }
 
-
-        transform.position = pos;
     }
 }
 

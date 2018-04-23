@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
     GameObject[] menuObjects;
+    public Text scoreText;
     // Use this for initialization
     void Start()
     {
         Time.timeScale = 1;
         menuObjects = GameObject.FindGameObjectsWithTag("Menu");
         hideMenu();
+    }
+   public void SetScore(int score) { 
+        scoreText.text = "Score: " + score;
     }
 
     //Reloads the Level

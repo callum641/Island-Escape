@@ -6,7 +6,8 @@ public class CharacterAnimation : MonoBehaviour {
     public Sprite[] sprites;
     public float framesPerSecond;
     private SpriteRenderer spriteRenderer;
-    private SwordAttack attack;
+    private GameObject rotation;
+
 
     public bool IsKeyEnabled_w { get; set; }
     public bool IsKeyEnabled_a { get; set; }
@@ -16,8 +17,8 @@ public class CharacterAnimation : MonoBehaviour {
     // Use this for initialization
     void Start () {
         spriteRenderer = GetComponent<Renderer>() as SpriteRenderer;
+        rotation = GameObject.Find("Rotation");
         Awake();
-        attack = gameObject.GetComponentInChildren<SwordAttack>();
     }
 
     void Awake()
@@ -40,7 +41,8 @@ public class CharacterAnimation : MonoBehaviour {
                 int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
                 index = index % 6 + 1;
                 spriteRenderer.sprite = sprites[index];
-          
+                rotation.transform.eulerAngles = new Vector3(0, 180, 0);
+
 
         }
         else if (Input.GetKey("d") && IsKeyEnabled_d == true)
@@ -51,7 +53,7 @@ public class CharacterAnimation : MonoBehaviour {
             int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
             index = index % 6 + 7;
             spriteRenderer.sprite = sprites[index];
-           
+            rotation.transform.eulerAngles = new Vector3(0, 0, 0);
         }
         else if (Input.GetKey("s") && IsKeyEnabled_s == true)
         {
@@ -61,7 +63,7 @@ public class CharacterAnimation : MonoBehaviour {
             int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
             index = index % 5 + 13;
             spriteRenderer.sprite = sprites[index];
-           
+            rotation.transform.eulerAngles = new Vector3(0, 0, -90);
         }
         else if (Input.GetKey("w") && IsKeyEnabled_w == true)
         {
@@ -71,7 +73,7 @@ public class CharacterAnimation : MonoBehaviour {
             int index = (int)(Time.timeSinceLevelLoad * framesPerSecond);
             index = index % 3 + 18;
             spriteRenderer.sprite = sprites[index];
-           
+            rotation.transform.eulerAngles = new Vector3(0, 0, 90);
         }
        
         if (Input.GetKeyUp("d"))

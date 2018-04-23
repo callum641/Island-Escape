@@ -8,25 +8,27 @@ public class EnemyTerritory : MonoBehaviour
     RaycastHit2D hit;
     public LayerMask collisionLayer;
     public Color raycolor;
-    GameObject player;
+    Transform target;
     bool follow;
-    EnemyController enemycontroller;
-    public Transform target;
+    EnemyController enemyController;
     float time = 0f;
     float timepassed;
     float time2 = 0f;
     float random;
     float switchState;
 
+
     Vector3 direction;
+    private int randomState;
 
     // Use this for initialization
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        enemycontroller = transform.parent.gameObject.GetComponent<EnemyController>();
+        target = GameObject.FindWithTag("Player").transform;
+        enemyController = transform.parent.gameObject.GetComponent<EnemyController>();
         switchState = Random.Range(6, 10);
         random = Random.Range(11, 14);
+        randomState = Random.Range(0, 10);
     }
 
     void OnTriggerStay2D(Collider2D other)
@@ -47,7 +49,7 @@ public class EnemyTerritory : MonoBehaviour
         void Update()
     {
         Vector3 targetDir = target.position - transform.position;
-        Vector3 direction = enemycontroller.transform.localRotation * Vector3.right;
+        Vector3 direction = enemyController.transform.localRotation * Vector3.right;
         float angle = Vector3.Angle(targetDir, direction);
         //Debug.Log(angle);
         if (angle < 60f)
@@ -57,9 +59,15 @@ public class EnemyTerritory : MonoBehaviour
             hit = Physics2D.Raycast(transform.position, rayDirection, 8, collisionLayer);
             if (hit.collider != null) { 
             if (hit.collider.tag == "Player")
-            {
-
-                enemycontroller.MoveToPlayer();
+                {
+                    if (randomState > 5)
+                    {
+                        enemyController.RunFromPlayer();
+                    }
+                    else
+                    {
+                        enemyController.MoveToPlayer();
+                    }
             }
             else if (hit.collider.tag == "Rock")
                 {
@@ -67,7 +75,7 @@ public class EnemyTerritory : MonoBehaviour
 
                     if (time > timepassed)
                     {
-                        enemycontroller.Wander();
+                        enemyController.Wander();
                     }
                     time += Time.deltaTime;
                 }
@@ -79,12 +87,12 @@ public class EnemyTerritory : MonoBehaviour
                 if (time2 < switchState)
                 {
                    
-                    enemycontroller.Wander();
+                    enemyController.Wander();
                 }
                 else if (time2 > switchState && time2 < random)
                 {
                     
-                    enemycontroller.Stay();
+                    enemyController.Stay();
                 }
                 else
                 {
@@ -102,19 +110,20 @@ public class EnemyTerritory : MonoBehaviour
             if (time2 < switchState)
             {
                
-                enemycontroller.Wander();
+                enemyController.Wander();
             }
             else if (time2 > switchState && time2 < random)
             {
                
                
-                enemycontroller.Stay();
+                enemyController.Stay();
             }
             else
             {
                 time2 = 0;
                 switchState = Random.Range(6, 10);
                 random = Random.Range(11, 14);
+                randomState = Random.Range(0, 10);
             }
 
         }

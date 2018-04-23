@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Rock
   - Menu
+  - UIManager
   layers:
   - Default
   - TransparentFX

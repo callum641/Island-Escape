@@ -4,23 +4,28 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public Transform target;
+    Transform target;
     float speed = 4.5f;
     float attack1Range = 5f;
     public int attack1Damage = 1;
     public float timeBetweenAttacks;
+    private CharacterController characterController;
     public int health;
     float time = 0;
     float duration;
     Vector3 euler;
+    float attackDistance =2f;
     float distance;
-    
+    private bool isInvincible = false;
+    private float timeSpentInvincible;
+    private float time3;
+
 
 
     // Use this for initialization
     void Start()
     {
-
+        target = GameObject.FindWithTag("Player").transform;
         duration = Random.Range(0, 7);
         euler = transform.eulerAngles;
         euler.z = Random.Range(0f, 360f);
@@ -36,33 +41,72 @@ public class EnemyController : MonoBehaviour
             transform.LookAt(target.position);
             transform.Rotate(new Vector3(0, -90, 0), Space.Self);
         }
-        
+        if (isInvincible)
+        {
+
+            timeSpentInvincible += Time.deltaTime;
+
+
+            if (timeSpentInvincible < 2f)
+            {
+                float remainder = timeSpentInvincible % .3f;
+                GetComponent<Renderer>().enabled = remainder > .15f;
+            }
+
+            else
+            {
+                GetComponent<Renderer>().enabled = true;
+                isInvincible = false;
+            }
+        }
     }
 
     public void TakeDamage(int amount)
     {
         Debug.Log("enemy health" + health);
-        health += amount;
-        if (health == 0)
+        characterController = target.gameObject.GetComponent<CharacterController>();
+        if (!isInvincible)
         {
-            Destroy(gameObject);
+            isInvincible = true;
+            timeSpentInvincible = 0;
+            health += amount;
+
+            if (health == 0)
+            {
+                Destroy(this.gameObject);
+                characterController.IncreaseScore(1);
+
+            }
         }
     }
 
     public void MoveToPlayer()
     {
 
-        // if (distance > attack1Range){ 
+        if (attackDistance > attack1Range){ 
         transform.LookAt(target.position);
         transform.Rotate(new Vector3(0, -90, 0), Space.Self);
         transform.Translate(new Vector3(speed * Time.deltaTime, 0, 0));
-        // }
+        }
+         else if (attackDistance <= attack1Range)
+         {
+        AttackPlayer();
+          }
 
-        // else if (distance <= attack1Range)
-        // {
-        //AttackPlayer();
-        //  }
+    }
 
+    public void RunFromPlayer()
+    {
+        if (attackDistance > attack1Range)
+        {
+        transform.LookAt(target.position);
+        transform.Rotate(new Vector3(0, -90, 0), Space.Self);
+        transform.position -= transform.right * speed * Time.deltaTime;
+        }
+        else if (attackDistance <= attack1Range)
+        {
+            AttackPlayer();
+        }
     }
 
 
@@ -70,14 +114,7 @@ public class EnemyController : MonoBehaviour
     public void AttackPlayer()
     {
         duration = 2f;
-
-        if (time > duration && time < 3f)
-        {
-            transform.Translate(new Vector3(0f * Time.deltaTime, 0, 0));
-            time += Time.deltaTime;
-
-        }
-        else if (time < duration)
+        if (time < duration)
         {
             if (time < 0.5f)
             {
@@ -86,11 +123,12 @@ public class EnemyController : MonoBehaviour
             }
             else
             {
-                transform.Translate(new Vector3(7f * Time.deltaTime, 0, 0));
+                
+                transform.Translate(new Vector3(6f * Time.deltaTime, 0, 0));
                 time += Time.deltaTime;
             }
         }
-        else if (time > 3f)
+        else if (time > duration)
         {
             time = 0;
 
@@ -98,14 +136,6 @@ public class EnemyController : MonoBehaviour
 
     }
 
-
-    void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-
-        }
-    }
 
     public void Stay()
     {
@@ -120,8 +150,6 @@ public class EnemyController : MonoBehaviour
                 transform.eulerAngles = euler;
                 transform.position += transform.right * speed * Time.deltaTime;
                 time += Time.deltaTime;
-                //Debug.Log(time);
-                //Debug.Log(switchState);
             }
             else if (time > duration)
             {
