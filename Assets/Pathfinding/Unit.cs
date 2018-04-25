@@ -28,7 +28,9 @@ public class Unit : MonoBehaviour {
 			if (transform.position == currentWaypoint) {
 				targetIndex ++;
 				if (targetIndex >= path.Length) {
-					yield break;
+                    targetIndex = 0;
+                    path = new Vector3[0];
+                    yield break;
 				}
 				currentWaypoint = path[targetIndex];
 			}

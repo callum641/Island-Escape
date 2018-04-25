@@ -7,9 +7,9 @@ TagManager:
   - Left Wall
   - Bottom Wall
   - Enemy
-  - Rock
   - Menu
   - UIManager
+  - Collision
   layers:
   - Default
   - TransparentFX

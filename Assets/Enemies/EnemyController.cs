@@ -6,7 +6,7 @@ public class EnemyController : MonoBehaviour
 {
     Transform target;
     float speed = 4.5f;
-    float attack1Range = 5f;
+    float attack1Range = 3f;
     public int attack1Damage = 1;
     public float timeBetweenAttacks;
     private CharacterController characterController;
@@ -26,10 +26,11 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         target = GameObject.FindWithTag("Player").transform;
-        duration = Random.Range(0, 7);
+        duration = Random.Range(1, 7);
         euler = transform.eulerAngles;
         euler.z = Random.Range(0f, 360f);
         distance = Vector3.Distance(target.position, transform.position);
+        Wander();
     }
 
     // Update is called once per frame
@@ -82,60 +83,11 @@ public class EnemyController : MonoBehaviour
 
     public void MoveToPlayer()
     {
-
-        if (attackDistance > attack1Range){ 
         transform.LookAt(target.position);
         transform.Rotate(new Vector3(0, -90, 0), Space.Self);
         transform.Translate(new Vector3(speed * Time.deltaTime, 0, 0));
-        }
-         else if (attackDistance <= attack1Range)
-         {
-        AttackPlayer();
-          }
-
     }
-
-    public void RunFromPlayer()
-    {
-        if (attackDistance > attack1Range)
-        {
-        transform.LookAt(target.position);
-        transform.Rotate(new Vector3(0, -90, 0), Space.Self);
-        transform.position -= transform.right * speed * Time.deltaTime;
-        }
-        else if (attackDistance <= attack1Range)
-        {
-            AttackPlayer();
-        }
-    }
-
-
-
-    public void AttackPlayer()
-    {
-        duration = 2f;
-        if (time < duration)
-        {
-            if (time < 0.5f)
-            {
-                transform.Translate(new Vector3(0f * Time.deltaTime, 0, 0));
-                time += Time.deltaTime;
-            }
-            else
-            {
-                
-                transform.Translate(new Vector3(6f * Time.deltaTime, 0, 0));
-                time += Time.deltaTime;
-            }
-        }
-        else if (time > duration)
-        {
-            time = 0;
-
-        }
-
-    }
-
+        
 
     public void Stay()
     {
@@ -144,7 +96,6 @@ public class EnemyController : MonoBehaviour
 
     public void Wander()
     {
-       
             if (time < duration)
             {
                 transform.eulerAngles = euler;
@@ -158,6 +109,18 @@ public class EnemyController : MonoBehaviour
                 euler.z = Random.Range(0f, 360f);
             }
         }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Left Wall"))
+        {
+            transform.position += -transform.right * speed * Time.deltaTime;
         }
+        else if (other.CompareTag("Bottom Wall"))
+        {
+            transform.position += -transform.right * speed * Time.deltaTime;
+        }
+    }
+}
     
 
