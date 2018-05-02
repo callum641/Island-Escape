@@ -91,7 +91,7 @@ public class CharacterController : MonoBehaviour
         }
         if (score >= 10)
         {
-            SceneManager.LoadScene("Main Menu");
+            SceneManager.LoadScene("Win Scene");
         }
     }
 

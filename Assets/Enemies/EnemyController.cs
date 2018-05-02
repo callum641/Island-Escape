@@ -6,20 +6,19 @@ public class EnemyController : MonoBehaviour
 {
     Transform target;
     float speed = 4.5f;
-    float attack1Range = 3f;
     public int attack1Damage = 1;
     public float timeBetweenAttacks;
-    private CharacterController characterController;
+    CharacterController characterController;
     public int health;
     float time = 0;
     float duration;
     Vector3 euler;
-    float attackDistance =2f;
     float distance;
     private bool isInvincible = false;
     private float timeSpentInvincible;
     private float time3;
-
+    public bool healthLow;
+    private float time2;
 
 
     // Use this for initialization
@@ -30,17 +29,28 @@ public class EnemyController : MonoBehaviour
         euler = transform.eulerAngles;
         euler.z = Random.Range(0f, 360f);
         distance = Vector3.Distance(target.position, transform.position);
+        characterController = target.gameObject.GetComponent<CharacterController>();
         Wander();
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        time2 += Time.deltaTime;
         distance = Vector3.Distance(target.position, transform.position);
-        if (distance < 3f)
+        if (distance < 3f && healthLow == false)
         {
             transform.LookAt(target.position);
             transform.Rotate(new Vector3(0, -90, 0), Space.Self);
+        }
+        if (health == 1 && distance <8f)
+        {
+            healthLow = true;  
+        }
+        else
+        {
+            healthLow = false;
         }
         if (isInvincible)
         {
@@ -64,14 +74,13 @@ public class EnemyController : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        Debug.Log("enemy health" + health);
-        characterController = target.gameObject.GetComponent<CharacterController>();
+        
         if (!isInvincible)
         {
             isInvincible = true;
             timeSpentInvincible = 0;
             health += amount;
-
+            Debug.Log("enemy health" + health);
             if (health == 0)
             {
                 Destroy(this.gameObject);
@@ -81,13 +90,20 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    public void MoveToPlayer()
+
+        public void MoveToPlayer()
     {
         transform.LookAt(target.position);
         transform.Rotate(new Vector3(0, -90, 0), Space.Self);
         transform.Translate(new Vector3(speed * Time.deltaTime, 0, 0));
     }
         
+    public void Run()
+    {
+        transform.LookAt(2 * transform.position - target.position);
+        transform.Rotate(new Vector3(0, -90, 0), Space.Self);
+        transform.Translate(new Vector3(speed * Time.deltaTime, 0, 0));
+    }
 
     public void Stay()
     {

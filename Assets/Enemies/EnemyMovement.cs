@@ -11,30 +11,31 @@ public class EnemyMovement : MonoBehaviour
     Transform target;
     bool follow;
     EnemyController enemyController;
-    float time = 0f;
+    EnemyFactory enemyFactory;
     float timepassed;
-    float time2 = 0f;
+    float time = 0f;
     float random;
     float switchState;
+    private int random2;
     float speed = 3f;
     Vector3[] path;
     int targetIndex;
     Vector3 euler;
     Vector3 direction;
-    float randomState;
-    bool objectDetected = false;
-
-    float RotationSpeed = 1f;
+    private bool seePlayer;
+    private bool pathComplete = true;
+    private float distance;
+    private bool lowHealth = false;
 
     // Use this for initialization
     void Start()
     {
         target = GameObject.FindWithTag("Player").transform;
         enemyController = transform.parent.gameObject.GetComponent<EnemyController>();
+        enemyFactory = GameObject.FindGameObjectWithTag("Respawn").GetComponent<EnemyFactory>();
         switchState = Random.Range(6, 10);
         random = Random.Range(11, 14);
-        randomState = Random.Range(0, 10);
-        
+        random2 = Random.Range(0, 20);
     }
 
    
@@ -47,71 +48,89 @@ public class EnemyMovement : MonoBehaviour
         Vector3 targetDir = target.position - transform.position;
         Vector3 direction = enemyController.transform.localRotation * Vector3.right;
         float angle = Vector3.Angle(targetDir, direction);
-        //Debug.Log(angle);
-        if (angle < 60f)
+        distance = Vector3.Distance(target.position, transform.position);
+        
+        if (random2 >= 10 && enemyController.healthLow == true)
         {
-            Vector3 rayDirection = target.transform.position - transform.position;
-            Debug.DrawRay(transform.position, rayDirection, raycolor);
-            hit = Physics2D.Raycast(transform.position, rayDirection, 8, collisionLayer);
-            if (hit.collider != null)
+            lowHealth = true;
+            enemyFactory.SpawnHelp();
+        }
+        else if (random2 < 10 && enemyController.healthLow == true)
+        {
+            lowHealth = true;
+            enemyController.Run();
+        }
+        else if (distance > 9f)
+        {
+            random2 = Random.Range(0, 20);
+        }
+        if (angle < 60f && distance < 9f && lowHealth == false)
             {
-                if (hit.collider.tag == "Player")
+            Vector3 rayDirection = target.transform.position - transform.position;
+                Debug.DrawRay(transform.position, rayDirection, raycolor);
+                hit = Physics2D.Raycast(transform.position, rayDirection, 8, collisionLayer);
+                if (hit.collider != null)
                 {
+                    if (hit.collider.tag == "Player")
+                    {
+                    seePlayer = true;
+                    pathComplete = true;
+
                     enemyController.MoveToPlayer();
-                    
+                    }
+                    else if (hit.collider.tag == "Collision")
+                    {
+                        seePlayer = false;
+                        PathRequestManager.RequestPath(enemyController.transform.position, target.position, OnPathFound);
+                    }
                 }
-                else if (hit.collider.tag == "Collision")
+                else if (pathComplete == true)
                 {
-                    PathRequestManager.RequestPath(enemyController.transform.position, target.position, OnPathFound);
+                time += Time.deltaTime;
+                    if (time < switchState)
+                    {
+
+                        enemyController.Wander();
+                    }
+                    else if (time > switchState && time < random)
+                    {
+
+                        enemyController.Stay();
+                    }
+                    else
+                    {
+                        time = 0;
+                        switchState = Random.Range(6, 10);
+                        random = Random.Range(12, 16);
+                    }
 
                 }
+
+
             }
-            else
+            else if (pathComplete == true && distance > 9f)
             {
-                time2 += Time.deltaTime;
-                if (time2 < switchState)
+            time += Time.deltaTime;
+                if (time < switchState)
                 {
 
                     enemyController.Wander();
                 }
-                else if (time2 > switchState && time2 < random)
+                else if (time > switchState && time < random)
                 {
+
 
                     enemyController.Stay();
                 }
                 else
                 {
-                    time2 = 0;
+                    time = 0;
                     switchState = Random.Range(6, 10);
-                    random = Random.Range(12, 16);
+                    random = Random.Range(11, 14);
                 }
 
             }
-
-            
-        }
-        else
-        {
-            time2 += Time.deltaTime;
-            if (time2 < switchState)
-            {
-
-                enemyController.Wander();
-            }
-            else if (time2 > switchState && time2 < random)
-            {
-
-
-                enemyController.Stay();
-            }
-            else
-            {
-                time2 = 0;
-                switchState = Random.Range(6, 10);
-                random = Random.Range(11, 14);
-            }
-
-        }
+        
         }
     
 
@@ -120,7 +139,7 @@ public class EnemyMovement : MonoBehaviour
         {
             if (pathSuccessful)
             {
-                path = newPath;
+            path = newPath;
                 targetIndex = 0;
                 StopCoroutine("FollowPath");
                 StartCoroutine("FollowPath");
@@ -129,30 +148,30 @@ public class EnemyMovement : MonoBehaviour
 
         IEnumerator FollowPath()
         {
+        pathComplete = false;
         targetIndex = 0;
         Vector3 currentWaypoint = path[0];
-        while (true)
+        while (seePlayer == false)
             {
-                if (enemyController.transform.position == currentWaypoint)
+            if (enemyController.transform.position == currentWaypoint)
                 {
                     targetIndex++;
                 if (targetIndex >= path.Length)
                     {
-                    
+                    pathComplete = true;
                     targetIndex = 0;
                     path = new Vector3[0];
                     yield break;
                     }
                     currentWaypoint = path[targetIndex];
                 }
+
             Vector3 targetDir = currentWaypoint - enemyController.transform.position;
             float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
             enemyController.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            
 
             enemyController.transform.position = Vector3.MoveTowards(enemyController.transform.position, currentWaypoint, speed * Time.deltaTime);
                 yield return null;
-
             }
         }
 

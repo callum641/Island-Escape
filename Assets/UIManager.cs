@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour {
     {
         Time.timeScale = 1;
         menuObjects = GameObject.FindGameObjectsWithTag("Menu");
-        hideMenu();
+        HideMenu();
     }
    public void SetScore(int score) { 
         scoreText.text = "Score: " + score;
@@ -39,16 +39,16 @@ public class UIManager : MonoBehaviour {
         if (Time.timeScale == 1)
         {
             Time.timeScale = 0;
-            showMenu();
+            ShowMenu();
         }
         else if (Time.timeScale == 0)
         {
             Time.timeScale = 1;
-            hideMenu();
+            HideMenu();
         }
     }
 
-    public void showMenu()
+    public void ShowMenu()
     {
         foreach (GameObject obj in menuObjects)
         {
@@ -56,12 +56,17 @@ public class UIManager : MonoBehaviour {
         }
     }
 
-    public void hideMenu()
+    public void HideMenu()
     {
         foreach (GameObject obj in menuObjects)
         {
             obj.SetActive(false);
         }
+    }
+
+    public void LoadInstructions()
+    {
+        SceneManager.LoadScene("Instructions");
     }
 
     // Update is called once per frame
@@ -71,12 +76,12 @@ public class UIManager : MonoBehaviour {
             if (Time.timeScale == 1)
             {
                 Time.timeScale = 0;
-                showMenu();
+                ShowMenu();
             }
             else if (Time.timeScale == 0)
             {
                 Time.timeScale = 1;
-                hideMenu();
+                HideMenu();
             }
         }
 }
