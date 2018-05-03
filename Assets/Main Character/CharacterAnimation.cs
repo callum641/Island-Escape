@@ -16,11 +16,14 @@ public class CharacterAnimation : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        //getting game objects for use later
         spriteRenderer = GetComponent<Renderer>() as SpriteRenderer;
         rotation = GameObject.Find("Rotation");
+        //setting the character to be awake
         Awake();
     }
 
+    //function to allow all key presses
     void Awake()
     {
         IsKeyEnabled_w = true;
@@ -33,6 +36,8 @@ public class CharacterAnimation : MonoBehaviour {
     // Update is called once per frame
     void Update()
         {
+        //if statements checking for relevant keypress and only allowing one key to be activated at a time
+        //it then loops through an array of sprites to create the walking animation as well as setting the rotation of the rotation object
         if (Input.GetKey("a") && IsKeyEnabled_a == true)
             {
                 IsKeyEnabled_w = false;
@@ -76,6 +81,7 @@ public class CharacterAnimation : MonoBehaviour {
             rotation.transform.eulerAngles = new Vector3(0, 0, 90);
         }
        
+        //when a key is released sets the other keys to active again
         if (Input.GetKeyUp("d"))
         {
             Awake();

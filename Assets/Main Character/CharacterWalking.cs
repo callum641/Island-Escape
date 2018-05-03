@@ -14,8 +14,10 @@ public class CharacterWalking : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        //get the rigidbody component from this object
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
 
+        //if statements checkign for each key press and adding force in the relevant direction based on the key press.
         if (Input.GetKey("w"))
         {
             rb.AddForce(transform.up * 7);

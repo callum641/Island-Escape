@@ -8,16 +8,18 @@ public class HealthBarController : MonoBehaviour {
     public int currentHealth = 3;
 	// Use this for initialization
 	void Start () {
+        //get the slider component from this object
         healthBar = GetComponent<Slider>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        //set the value of healthBar to currentHealth
         healthBar.value = currentHealth;
 	}
 
-   
-    public void changeHealth(int health)
+   //function to change currentHealth based on the parameter
+    public void ChangeHealth(int health)
     {
         currentHealth += health;
     }

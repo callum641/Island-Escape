@@ -24,6 +24,7 @@ public class CharacterController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        //getting objects to be used later
         healthBar = GameObject.Find("Health Bar").GetComponent<HealthBarController>();
         rotation = GameObject.Find("Rotation");
     }
@@ -33,11 +34,12 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log("invincible " + isInvincible);
+        //if left mouse button is clicked activates SwordAttack()
         if (Input.GetMouseButtonDown(0))
         {
             SwordAttack();
         }
+        //checks if player is invincible, flashes the characters sprite and counts down time remaining
         if (isInvincible)
         {
 
@@ -57,7 +59,9 @@ public class CharacterController : MonoBehaviour
             }
         }
     }
-
+    //This function handles the attacking, this takes an array of onjects with the tag Enemy and finds their location through their transforms
+    //then using the function getClosestEnemy() finds the closest and sets this as target, the angle and distance is then calculated
+    //if the angle and distance matches trhe if statement the TakeDamage function is called on the enemy to take health away
     void SwordAttack()
     {
         spawners.Clear();
@@ -80,6 +84,8 @@ public class CharacterController : MonoBehaviour
     }
     }
 
+    //IncreaseScore function, called when an enemy dies, this sets the score bar to plus one and gives health to the player
+    //if score reaches 10 then the game is won and the scene is switched to the win scene
    public void IncreaseScore(int amount)
     {
         score += amount;
@@ -87,7 +93,7 @@ public class CharacterController : MonoBehaviour
         uiManager.SetScore(score);
         if (healthBar.currentHealth < 3)
         {
-            healthBar.changeHealth(1);
+            healthBar.ChangeHealth(1);
         }
         if (score >= 10)
         {
@@ -114,7 +120,8 @@ public class CharacterController : MonoBehaviour
     }
 
 
-
+    //collison with the walls and the enemy, if the enemy collides with the player then the player becomes invincible and the ChangeHealth function is called to take health away
+    //if the health hits 0 then the game is lost and the scene is switched to the main menu
     void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("Left Wall"))
@@ -129,7 +136,7 @@ public class CharacterController : MonoBehaviour
         {
             isInvincible = true;
             timeSpentInvincible = 0;
-            healthBar.changeHealth(-1);
+            healthBar.ChangeHealth(-1);
             if (healthBar.currentHealth <= 0)
             {
                 SceneManager.LoadScene("Main Menu");
