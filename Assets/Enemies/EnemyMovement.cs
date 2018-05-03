@@ -30,6 +30,7 @@ public class EnemyMovement : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        //setting starting variables and finding objects to be referenced later
         target = GameObject.FindWithTag("Player").transform;
         enemyController = transform.parent.gameObject.GetComponent<EnemyController>();
         enemyFactory = GameObject.FindGameObjectWithTag("Respawn").GetComponent<EnemyFactory>();
@@ -45,11 +46,13 @@ public class EnemyMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //finding the direction of the target and comparing to the rotation of the enemy to find the angle
         Vector3 targetDir = target.position - transform.position;
         Vector3 direction = enemyController.transform.localRotation * Vector3.right;
         float angle = Vector3.Angle(targetDir, direction);
+        //Uses the distance method to find distance between target and enemy position
         distance = Vector3.Distance(target.position, transform.position);
-        
+        //low health states
         if (random2 >= 10 && enemyController.healthLow == true)
         {
             lowHealth = true;
@@ -64,13 +67,18 @@ public class EnemyMovement : MonoBehaviour
         {
             random2 = Random.Range(0, 20);
         }
+        //if player is in line of sight
         if (angle < 60f && distance < 9f && lowHealth == false)
             {
+            //create ray in direction of the player from the enemy
             Vector3 rayDirection = target.transform.position - transform.position;
+            //visual representation of ray for debugging
                 Debug.DrawRay(transform.position, rayDirection, raycolor);
                 hit = Physics2D.Raycast(transform.position, rayDirection, 8, collisionLayer);
+            //if statements based on the return of the ray
                 if (hit.collider != null)
                 {
+                //if the player was hit break A* path and follow
                     if (hit.collider.tag == "Player")
                     {
                     seePlayer = true;
@@ -78,12 +86,14 @@ public class EnemyMovement : MonoBehaviour
 
                     enemyController.MoveToPlayer();
                     }
+                    //if a collision object is hit start A* path
                     else if (hit.collider.tag == "Collision")
                     {
                         seePlayer = false;
                         PathRequestManager.RequestPath(enemyController.transform.position, target.position, OnPathFound);
                     }
                 }
+                //if path is complete but player is not visible return to normal wander path
                 else if (pathComplete == true)
                 {
                 time += Time.deltaTime;
@@ -108,6 +118,7 @@ public class EnemyMovement : MonoBehaviour
 
 
             }
+        //if path is complete and distance between player and enemy is greater than 9f carry on wandering
             else if (pathComplete == true && distance > 9f)
             {
             time += Time.deltaTime;
@@ -134,7 +145,7 @@ public class EnemyMovement : MonoBehaviour
         }
     
 
-
+    //Following code is the same code found in the unit class
         public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
         {
             if (pathSuccessful)

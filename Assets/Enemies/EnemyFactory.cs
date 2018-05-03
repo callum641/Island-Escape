@@ -21,12 +21,14 @@ public class EnemyFactory : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //call the spawn function every frame and set starting variables
         Spawn();
         time += Time.deltaTime;
         wait =+ Random.Range(5, 15);
+        //find how many objects on the scene have the tag Enemy
         canrespawn = GameObject.FindGameObjectsWithTag("Enemy").Length;
     }
-
+    //function to be called in the EnemyMovement class when the enemy is low health
     public void SpawnHelp()
     {
         if (canrespawn < 5)
@@ -41,7 +43,7 @@ public class EnemyFactory : MonoBehaviour
             }
         }
         }
-
+    //spawn function clones the prefab enemy and randomly places them in the scene after a certain amount of time
     public void Spawn()
     {
         if (canrespawn < 5)
