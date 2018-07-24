@@ -1,2 +1,2 @@
 # Tiki-Island
-Work in progress game for my major project
+Survival game made for my major project
